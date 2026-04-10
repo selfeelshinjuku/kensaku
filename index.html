@@ -189,6 +189,31 @@ let showOption=document.querySelector('input[name="option"]:checked')?.value==="
 
 let tags=[...document.querySelectorAll('.tag:checked')].map(e=>e.value);
 
+// 症状メッセージ生成
+const symptomTags = ["コリ","冷え","ストレス","不眠","だるさ","肌","眼精疲労"];
+
+let selectedSymptoms = tags.filter(t => symptomTags.includes(t));
+
+if(selectedSymptoms.length > 0){
+
+    let text = selectedSymptoms.join("や");
+
+    const randomText = [
+    "最適な組み合わせをご提案します",
+    "あなたに合ったケアをご案内します",
+    "状態に合わせてしっかり整えます"
+    ];
+
+    let extra = randomText[Math.floor(Math.random()*randomText.length)];
+
+    document.getElementById("message").innerHTML =
+    `${text}にお悩みなら…<br>${extra}`;
+
+} else {
+    document.getElementById("message").innerHTML = "";
+}
+}
+    
 let result=data.filter(m=>{
 if(sex && m.sex!==sex) return false;
 if(m.maxAge && age>=50) return false;
