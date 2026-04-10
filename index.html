@@ -19,6 +19,7 @@ input:checked + span {background:#1e4d58;color:#fff;border-radius:20px;padding:8
 .reason {margin-top:10px;font-size:13px;color:#555;}
 
 .card {background:#fff;padding:15px;border-radius:10px;margin:10px 0;box-shadow:0 4px 10px rgba(0,0,0,0.05);}
+.section-title {margin-top:20px;color:#c5a36b;}
 
 button {margin-top:10px;width:100%;padding:10px;background:#1e4d58;color:#fff;border:none;border-radius:6px;}
 </style>
@@ -96,7 +97,7 @@ female:[
 ]
 };
 
-/* ===== UI生成 ===== */
+/* ===== UI ===== */
 
 function renderConcerns(sex){
 let list = sex==="male" ? concernMale : concernFemale;
@@ -131,7 +132,7 @@ filter();
 
 document.addEventListener('change',filter);
 
-/* ===== メイン処理 ===== */
+/* ===== メイン ===== */
 
 function filter(){
 
@@ -142,19 +143,17 @@ let rawTags=[...document.querySelectorAll('.tag:checked')].map(e=>e.value);
 /* 重複排除 */
 let tags=[...new Set(rawTags)];
 
-/* 悩みだけ抽出 */
 let concernList = sex==="male"?concernMale:concernFemale;
 let concernTags = tags.filter(t=>concernList.includes(t));
 
-/* メッセージ整形 */
+/* メッセージ */
 let msg="";
 if(concernTags.length){
-if(concernTags.length===1){
-msg=`${concernTags[0]}にお悩みなら…`;
-}else{
-msg=`${concernTags[0]}や${concernTags.slice(1).join("、")}などにお悩みなら…`;
-}
-msg+="<br>あなたに合うケアをご提案します";
+msg = concernTags.length===1
+? `${concernTags[0]}にお悩みなら…`
+: `${concernTags[0]}や${concernTags.slice(1).join("、")}などにお悩みなら…`;
+
+msg += "<br>あなたに合うケアをご提案します";
 }
 document.getElementById("message").innerHTML=msg;
 
@@ -165,7 +164,6 @@ if(c.maxAge && age>=50) return false;
 return true;
 });
 
-/* スコア */
 result=result.map(c=>{
 let score=0;
 tags.forEach(t=>{if(c.tags.includes(t))score+=2});
@@ -177,18 +175,27 @@ if(!result.length) return;
 /* TOP */
 let top=result[0];
 
-let reason="お悩みに合わせてバランス良く整えます。";
-
 let optHTML="";
 if(document.querySelector('input[name="option"]:checked')?.value==="yes" && sex){
-let matched=options[sex].filter(o=>tags.some(t=>o.tags.includes(t)));
-optHTML=matched.map(o=>`<div class="card">${o.name}</div>`).join("");
+
+let matched = options[sex].filter(o =>
+tags.some(t => o.tags.includes(t))
+);
+
+/* 🔥 フォールバック */
+if(matched.length===0){
+matched = options[sex];
+}
+
+optHTML = `
+<div class="section-title">おすすめオプション</div>
+` + matched.map(o=>`<div class="card">${o.name}</div>`).join("");
 }
 
 document.getElementById("top").innerHTML=`
 <div class="top-card">
 <b>あなたに最もおすすめ</b><br>${top.name}<br>${top.price}
-<div class="reason">${reason}</div>
+<div class="reason">お悩みに合わせてバランス良く整えます。</div>
 <button>このコースを詳しく</button>
 </div>
 ${optHTML}
