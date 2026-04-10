@@ -227,7 +227,7 @@ ${optHTML}
 `;
 
 document.getElementById("other").innerHTML = subCourses.length ? `
-<div class="section-title">● 他のおすすめコースと、組み合わせにいかがでしょうか…</div>
+<div class="section-title">● 他のおすすめと、組み合わせの候補です</div>
 <div class="sub-list">
 ${subCourses.map(c=>`<div class="sub-item">${c.name}　${c.price}</div>`).join("")}
 </div>` : "";
