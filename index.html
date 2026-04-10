@@ -21,6 +21,9 @@ input:checked + span {background:#1e4d58;color:#fff;border-radius:20px;padding:8
 .card {background:#fff;padding:15px;border-radius:10px;margin:10px 0;box-shadow:0 4px 10px rgba(0,0,0,0.05);}
 .section-title {margin-top:20px;color:#c5a36b;}
 
+.sub-list {margin-top:10px;}
+.sub-item {padding:10px 5px;border-bottom:1px solid #eee;font-size:13px;color:#444;}
+
 button {margin-top:10px;width:100%;padding:10px;background:#1e4d58;color:#fff;border:none;border-radius:6px;}
 .reset-btn {background:#aaa;margin-top:20px;}
 </style>
@@ -182,6 +185,7 @@ return;
 /* TOP */
 let top=result[0];
 
+/* オプション */
 let optHTML="";
 if(document.querySelector('input[name="option"]:checked')?.value==="yes" && sex){
 
@@ -198,6 +202,17 @@ optHTML = `
 ` + matched.map(o=>`<div class="card">${o.name}</div>`).join("");
 }
 
+/* サブコース（2位・3位） */
+let subCourses = result.slice(1,3);
+let subHTML = subCourses.length ? `
+<div class="section-title">他のおすすめ</div>
+<div class="sub-list">
+${subCourses.map(c=>`
+<div class="sub-item">${c.name}　${c.price}</div>
+`).join("")}
+</div>
+` : "";
+
 document.getElementById("top").innerHTML=`
 <div class="top-card">
 <b>あなたに最もおすすめ</b><br>${top.name}<br>${top.price}
@@ -207,8 +222,7 @@ document.getElementById("top").innerHTML=`
 ${optHTML}
 `;
 
-document.getElementById("other").innerHTML=
-result.slice(1).map(c=>`<div class="card">${c.name}<br>${c.price}</div>`).join("");
+document.getElementById("other").innerHTML = subHTML;
 
 }
 
