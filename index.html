@@ -30,8 +30,8 @@
     <div class="filter-group">
         <h3>1. 性別を選択</h3>
         <div class="tag-container">
-            <label><input type="radio" name="sex" value="male" onchange="toggleBenefitTags(); filterAndDisplay()"> 男性</label>
-            <label><input type="radio" name="sex" value="female" onchange="toggleBenefitTags(); filterAndDisplay()"> 女性</label>
+            <label><input type="radio" name="sex" value="male" onchange="toggleGenderUI(); filterAndDisplay()"> 男性</label>
+            <label><input type="radio" name="sex" value="female" onchange="toggleGenderUI(); filterAndDisplay()"> 女性</label>
         </div>
     </div>
 
@@ -43,25 +43,41 @@
     </div>
 
     <div class="filter-group">
-        <h3>3. 気になるお悩み・部位</h3>
+        <h3>3. 気になる症状とお悩み</h3>
         <div class="tag-container">
             <label><input type="checkbox" class="tag-chk" value="コリ/ハリ" onchange="filterAndDisplay()"> コリ/ハリ</label>
             <label><input type="checkbox" class="tag-chk" value="冷/むくみ" onchange="filterAndDisplay()"> 冷/むくみ</label>
-            <label><input type="checkbox" class="tag-chk" value="不眠" onchange="filterAndDisplay()"> 不眠/ストレス</label>
-            <label><input type="checkbox" class="tag-chk" value="ヘッド" onchange="filterAndDisplay()"> ヘッド</label>
-            <label><input type="checkbox" class="tag-chk" value="フェイス" onchange="filterAndDisplay()"> フェイス</label>
+            <label><input type="checkbox" class="tag-chk" value="ストレス" onchange="filterAndDisplay()"> ストレス</label>
+            <label><input type="checkbox" class="tag-chk" value="不眠" onchange="filterAndDisplay()"> 不眠</label>
+            <label><input type="checkbox" class="tag-chk" value="だるさ" onchange="filterAndDisplay()"> だるさ</label>
+            <label><input type="checkbox" class="tag-chk" value="肌荒" onchange="filterAndDisplay()"> 肌荒・痒み</label>
+            <label><input type="checkbox" class="tag-chk" value="頭痛/眼疲" onchange="filterAndDisplay()"> 頭痛・眼精疲労</label>
         </div>
     </div>
 
     <div class="filter-group">
-        <h3>4. こうなりたい！（ベネフィット）</h3>
+        <h3>4. 施術部位</h3>
+        <div class="tag-container">
+            <label><input type="checkbox" class="tag-chk" value="全身" onchange="filterAndDisplay()"> 全身</label>
+            <label><input type="checkbox" class="tag-chk" value="ヘッド" onchange="filterAndDisplay()"> ヘッド</label>
+            <label><input type="checkbox" class="tag-chk" value="フェイス" onchange="filterAndDisplay()"> フェイス</label>
+            <label><input type="checkbox" class="tag-chk" value="足裏" onchange="filterAndDisplay()"> 足裏・足元</label>
+            <label><input type="checkbox" class="tag-chk" value="そけい" onchange="filterAndDisplay()"> そけい部</label>
+            <label><input type="checkbox" class="tag-chk" value="お腹" onchange="filterAndDisplay()"> お腹・腰</label>
+        </div>
+    </div>
+
+    <div class="filter-group">
+        <h3>5. こうなりたい！（ベネフィット）</h3>
         <div id="benefit-male" class="tag-container hidden">
             <label><input type="checkbox" class="tag-chk" value="活力向上" onchange="filterAndDisplay()"> 精力と活力アップで元気になりたい！</label>
-            <label><input type="checkbox" class="tag-chk" value="思考スッキリ" onchange="filterAndDisplay()"> 仕事のパフォーマンスを上げたい</label>
+            <label><input type="checkbox" class="tag-chk" value="思考スッキリ" onchange="filterAndDisplay()"> 思考をクリアに、仕事の質を上げたい</label>
+            <label><input type="checkbox" class="tag-chk" value="バランス回復" onchange="filterAndDisplay()"> 心身のバランスを取り戻したい</label>
         </div>
         <div id="benefit-female" class="tag-container hidden">
             <label><input type="checkbox" class="tag-chk" value="スピ癒し" onchange="filterAndDisplay()"> スピリチュアルな癒しも欲しい</label>
             <label><input type="checkbox" class="tag-chk" value="デトックス" onchange="filterAndDisplay()"> 体を芯から軽く、綺麗にしたい</label>
+            <label><input type="checkbox" class="tag-chk" value="至福の休息" onchange="filterAndDisplay()"> 誰にも邪魔されず贅沢に休みたい</label>
         </div>
     </div>
 
@@ -71,26 +87,36 @@
 
 <script>
     const menuData = [
-        // --- 男性用 ---
-        { sex: "male", name: "メンズアロマ 1.5h〜", price: "12,000円〜", tags: ["コリ/ハリ", "冷/むくみ", "不眠", "思考スッキリ"], feat: "人気No1", ageLimit: null },
-        { sex: "male", name: "メンズブースト", price: "ASK", tags: ["活力向上", "精力活力"], feat: "49歳以下限定", ageLimit: 49 },
-        { sex: "male", name: "メンズエナジー", price: "+1,500円", tags: ["活力向上", "精力活力", "そけい"], feat: "人気No1", ageLimit: null },
-        { sex: "male", name: "アート＆ヘッドセラピー", price: "23,500円", tags: ["不眠", "ヘッド", "思考スッキリ"], feat: "メンタルケア", ageLimit: null },
+        // --- 男性用コース ---
+        { sex: "male", name: "メンズアロマ 1.5h〜3h", price: "12,000円〜", tags: ["コリ/ハリ", "冷/むくみ", "ストレス", "不眠", "だるさ", "肌荒", "全身", "思考スッキリ"], feat: "人気No1", ageLimit: null },
+        { sex: "male", name: "メンズリカバリー 1.5h〜2.5h", price: "12,000円〜", tags: ["コリ/ハリ", "だるさ", "全身", "思考スッキリ"], feat: "NEW おすすめ", ageLimit: null },
+        { sex: "male", name: "アート＆メンズアロマ 3h", price: "26,000円", tags: ["ストレス", "全身", "バランス回復"], feat: "極上の癒し", ageLimit: null },
+        { sex: "male", name: "アート＆ヘッドセラピー", price: "23,500円", tags: ["不眠", "ヘッド", "思考スッキリ"], feat: "脳の休息", ageLimit: null },
+        { sex: "male", name: "メンズブースト", price: "ASK", tags: ["活力向上", "精力活力", "だるさ"], feat: "49歳以下限定", ageLimit: 49 },
         
-        // --- 女性用 ---
-        { sex: "female", name: "リラックスセット 1.5h〜", price: "9,500円〜", tags: ["コリ/ハリ", "冷/むくみ", "デトックス"], feat: "リピNo1", ageLimit: null },
-        { sex: "female", name: "アート＆リフレ 3h", price: "23,500円", tags: ["スピ癒し", "不眠", "デトックス"], feat: "極上の癒し", ageLimit: null },
-        { sex: "female", name: "レイキヒーリング", price: "要確認", tags: ["スピ癒し"], feat: "スピリチュアル", ageLimit: null },
-        { sex: "female", name: "超音波レッグケア", price: "+3,500円", tags: ["冷/むくみ", "デトックス"], feat: "おすすめ", ageLimit: null }
+        // --- 男性用オプション ---
+        { sex: "male", name: "メンズエナジー", price: "+1,500円", tags: ["活力向上", "精力活力", "そけい"], feat: "人気No1", ageLimit: null },
+        { sex: "male", name: "炭酸ヘッドセラピー", price: "+1,500円", tags: ["不眠", "頭痛/眼疲", "ヘッド", "思考スッキリ"], feat: "リピNo1", ageLimit: null },
+        { sex: "male", name: "プチフェイシャル", price: "+3,500円", tags: ["肌荒", "フェイス"], feat: "身だしなみ", ageLimit: null },
+
+        // --- 女性用コース ---
+        { sex: "female", name: "リラックスセット 1.5h〜2.5h", price: "9,500円〜", tags: ["コリ/ハリ", "冷/むくみ", "足裏", "全身", "デトックス"], feat: "リピNo1", ageLimit: null },
+        { sex: "female", name: "アート＆リフレ 3h", price: "23,500円", tags: ["スピ癒し", "不眠", "足裏", "全身", "至福の休息"], feat: "至高の体験", ageLimit: null },
+        { sex: "female", name: "レイキヒーリング", price: "要確認", tags: ["スピ癒し", "ストレス"], feat: "スピリチュアル", ageLimit: null },
+        { sex: "female", name: "アート＆ヘッドセラピー", price: "23,500円", tags: ["不眠", "ヘッド", "至福の休息"], feat: "NEW", ageLimit: null },
+
+        // --- 女性用オプション ---
+        { sex: "female", name: "ホットリフレクソロジー", price: "+1,500円", tags: ["冷/むくみ", "足裏", "デトックス"], feat: "人気No1", ageLimit: null },
+        { sex: "female", name: "超音波レッグケア", price: "+3,500円", tags: ["冷/むくみ", "だるさ", "デトックス"], feat: "おすすめ", ageLimit: null },
+        { sex: "female", name: "炭酸ヘッドセラピー", price: "+1,500円", tags: ["不眠", "ヘッド"], feat: "スッキリ", ageLimit: null }
     ];
 
-    // 性別に応じてベネフィットタグの表示を切り替える
-    const toggleBenefitTags = () => {
+    const toggleGenderUI = () => {
         const selectedSex = document.querySelector('input[name="sex"]:checked')?.value;
         document.getElementById('benefit-male').classList.toggle('hidden', selectedSex !== 'male');
         document.getElementById('benefit-female').classList.toggle('hidden', selectedSex !== 'female');
         
-        // 性別を変えたら、チェックされていたベネフィットをリセットする（誤作動防止）
+        // 性別変更時に、隠れた性別のベネフィットチェックを外す
         document.querySelectorAll('.tag-chk').forEach(cb => {
             if (cb.closest('.hidden')) cb.checked = false;
         });
@@ -113,6 +139,7 @@
         });
 
         if (activeTags.length > 0) {
+            // 選択したタグのいずれか1つでも含まれていれば表示
             filtered = filtered.filter(m => activeTags.some(t => m.tags.includes(t)));
         }
 
@@ -130,7 +157,7 @@
     };
 
     window.onload = () => {
-        toggleBenefitTags();
+        toggleGenderUI();
         filterAndDisplay();
     };
 </script>
