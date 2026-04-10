@@ -5,23 +5,62 @@
 <title>セルフ診断</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { font-family: sans-serif; padding: 20px; background:#f7f7f7;}
-.container { max-width:600px; margin:auto; background:#fff; padding:20px; border-radius:10px;}
-h2 { margin-top:0;}
-button {
-  display:block; width:100%; margin:10px 0; padding:12px;
-  border:none; border-radius:8px; background:#333; color:#fff; font-size:16px;
+
+body {
+  font-family: sans-serif;
+  background:#f5f5f5;
+  padding:20px;
 }
-button:hover { background:#555;}
-.result { background:#f0f0f0; padding:15px; border-radius:8px; margin-top:20px;}
+
+.container {
+  max-width:600px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+}
+
+h2 {
+  text-align:center;
+}
+
+.btn {
+  display:block;
+  width:100%;
+  margin:8px 0;
+  padding:14px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  background:#fff;
+  font-size:16px;
+  transition:0.2s;
+}
+
+.btn.active {
+  background:#333;
+  color:#fff;
+  border:none;
+}
+
+.next-btn {
+  margin-top:15px;
+  background:#000;
+  color:#fff;
+}
+
+.result {
+  background:#f0f0f0;
+  padding:20px;
+  border-radius:10px;
+}
+
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<h2 id="title">あなたに最適なコース診断</h2>
-
+<h2>あなたに最適なコース診断</h2>
 <div id="content"></div>
 
 </div>
@@ -32,107 +71,106 @@ let gender = "";
 let concerns = [];
 let purpose = "";
 
-// 初期画面
+// STEP1
 function start(){
-  document.getElementById("content").innerHTML = `
+  render(`
     <p>性別を選択してください</p>
-    <button onclick="setGender('male')">男性</button>
-    <button onclick="setGender('female')">女性</button>
-  `;
+    <button class="btn" onclick="selectGender('male', this)">男性</button>
+    <button class="btn" onclick="selectGender('female', this)">女性</button>
+  `);
 }
 
-function setGender(g){
+function selectGender(g, el){
   gender = g;
-  showConcerns();
+  setActive(el);
+  setTimeout(showConcerns, 300);
 }
 
-// 悩み選択
+// STEP2
 function showConcerns(){
 
-  let list = gender === "male" ? [
-    "コリ・ハリ","冷え・むくみ","ストレス","不眠","頭痛・眼精疲労","だるさ","肌荒れ","精力・活力"
-  ] : [
-    "コリ・ハリ","冷え・むくみ","ストレス","不眠","頭痛・眼精疲労","だるさ","肌荒れ","美容"
-  ];
+  let list = gender === "male"
+    ? ["コリ・ハリ","冷え・むくみ","ストレス","不眠","頭痛・眼精疲労","だるさ","肌荒れ","精力・活力"]
+    : ["コリ・ハリ","冷え・むくみ","ストレス","不眠","頭痛・眼精疲労","だるさ","肌荒れ","美容"];
 
-  let html = "<p>気になる悩みを選択（複数OK）</p>";
+  let html = `<p>気になる悩みを選択（複数OK）</p>`;
 
   list.forEach(item=>{
-    html += `<button onclick="toggleConcern('${item}')">${item}</button>`;
+    html += `<button class="btn" onclick="toggleConcern('${item}', this)">${item}</button>`;
   });
 
-  html += `<button onclick="showPurpose()">次へ</button>`;
+  html += `<button class="btn next-btn" onclick="showPurpose()">次へ</button>`;
 
-  document.getElementById("content").innerHTML = html;
+  render(html);
 }
 
-function toggleConcern(c){
+function toggleConcern(c, el){
   if(concerns.includes(c)){
     concerns = concerns.filter(x=>x!==c);
+    el.classList.remove("active");
   } else {
     concerns.push(c);
+    el.classList.add("active");
   }
 }
 
-// 目的
+// STEP3
 function showPurpose(){
-  let list = gender === "male" ? [
-    "疲れを取りたい","リラックスしたい","体を整えたい","美容も気になる","活力を上げたい"
-  ] : [
-    "疲れを取りたい","リラックスしたい","体を整えたい","キレイになりたい"
-  ];
 
-  let html = "<p>目的を選択してください</p>";
+  let list = gender === "male"
+    ? ["疲れを取りたい","リラックスしたい","体を整えたい","美容も気になる","活力を上げたい"]
+    : ["疲れを取りたい","リラックスしたい","体を整えたい","キレイになりたい"];
+
+  let html = `<p>目的を選択してください</p>`;
 
   list.forEach(item=>{
-    html += `<button onclick="setPurpose('${item}')">${item}</button>`;
+    html += `<button class="btn" onclick="selectPurpose('${item}', this)">${item}</button>`;
   });
 
-  document.getElementById("content").innerHTML = html;
+  render(html);
 }
 
-function setPurpose(p){
+function selectPurpose(p, el){
   purpose = p;
-  showResult();
+  setActive(el);
+  setTimeout(showResult, 300);
 }
 
-// 診断ロジック
+// 診断ロジック（進化版）
 function showResult(){
 
   let course = "";
   let reason = "";
   let options = [];
 
-  // 男性ロジック
   if(gender === "male"){
 
     if(concerns.includes("精力・活力")){
       course = "メンズブースト";
-      reason = "活力・精力アップに特化した下半身集中ケア";
+      reason = "下半身の巡りと活力を高める特化ケアが最適です。";
       options.push("メンズエナジー");
     }
 
     if(concerns.includes("コリ・ハリ") && concerns.includes("ストレス") && concerns.includes("不眠")){
       course = "メンズリカバリー";
-      reason = "深部のコリ＋ストレス＋不眠に対応する最上位ケア";
+      reason = "コリ・ストレス・睡眠の質を同時に改善する深部ケアが必要です。";
     }
 
     if(course === "" && (concerns.includes("コリ・ハリ") || concerns.includes("冷え・むくみ"))){
       course = "メンズアロマ";
-      reason = "整体＋オイルで血流とコリを改善";
+      reason = "血流促進とコリ解消をバランスよく整える施術が最適です。";
     }
 
     if(concerns.length >=5){
       course = "メンズマックス";
-      reason = "全身フルケアの最上位コース";
+      reason = "全身の状態を一度に整える総合ケアがおすすめです。";
     }
 
     if(course === ""){
       course = "リラックスセット";
-      reason = "全身をバランスよく整えるベーシックケア";
+      reason = "全身のバランスを整えながら疲労を回復します。";
     }
 
-    // オプション
     if(concerns.includes("ストレス") || concerns.includes("不眠")){
       options.push("炭酸ヘッドセラピー");
     }
@@ -151,35 +189,33 @@ function showResult(){
 
   }
 
-  // 女性ロジック
   if(gender === "female"){
 
     if(concerns.includes("美容")){
       course = "シンデレラフェイシャル";
-      reason = "美容成分導入とリフトアップケア";
+      reason = "美容成分導入と引き締めケアで肌状態を改善します。";
     }
 
     if(concerns.includes("コリ・ハリ") && concerns.includes("ストレス")){
       course = "シンデレラリラックス";
-      reason = "疲労とストレスを同時に解消する人気コース";
+      reason = "疲労とストレスを同時にケアできる最適なコースです。";
     }
 
     if(course === "" && concerns.includes("冷え・むくみ")){
       course = "リフレクソロジー";
-      reason = "むくみ・冷え改善の足元集中ケア";
+      reason = "むくみと冷えの改善に特化したケアです。";
     }
 
     if(concerns.length >=5){
       course = "MDNAシンデレラ";
-      reason = "全身＋美容の最上位ケア";
+      reason = "全身と美容を同時に整えるトータルケアです。";
     }
 
     if(course === ""){
       course = "リラックスセット";
-      reason = "全身を整える定番コース";
+      reason = "全身をバランスよく整えリラックスできます。";
     }
 
-    // オプション
     if(concerns.includes("冷え・むくみ")){
       options.push("ホットリフレクソロジー");
     }
@@ -198,36 +234,36 @@ function showResult(){
 
   }
 
-  // オプション制限
   options = [...new Set(options)].slice(0,3);
 
-  let html = `
+  render(`
     <div class="result">
-    <h3>あなたにおすすめ</h3>
+      <h3>あなたへのおすすめ</h3>
 
-    <p><strong>コース：</strong><br>${course}</p>
+      <p><strong>${course}</strong></p>
 
-    <p><strong>理由：</strong><br>${reason}</p>
+      <p>${reason}</p>
 
-    <p><strong>おすすめオプション：</strong><br>
-    ${options.join("<br>")}
-    </p>
-
+      <p><strong>おすすめオプション</strong><br>
+      ${options.join("<br>")}
+      </p>
     </div>
-  `;
+  `);
+}
 
+// 共通
+function render(html){
   document.getElementById("content").innerHTML = html;
+}
+
+function setActive(el){
+  document.querySelectorAll(".btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
 }
 
 // 起動
 start();
 
 </script>
-
-</body>
-</html>
-
-</script>
-
 </body>
 </html>
