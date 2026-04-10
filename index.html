@@ -229,7 +229,7 @@ let selected=tags.filter(t=>symptomTags.includes(t));
 if(selected.length>0){
 let txt=selected.join("や、");
 document.getElementById("message").innerHTML=
-`にお悩みなら…<br>最適なコースや組合せをご提案します`;
+`${txt}に、お悩みなら…<br>最適なコースや候補をご提案します`;
 }else{
 document.getElementById("message").innerHTML="";
 }
