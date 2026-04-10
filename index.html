@@ -144,7 +144,7 @@ let tags=[...document.querySelectorAll('.tag:checked')].map(e=>e.value);
 let msgTags=["コリ","冷え","ストレス","不眠","だるさ","肌","眼精疲労"];
 let selected=tags.filter(t=>msgTags.includes(t));
 document.getElementById("message").innerHTML =
-selected.length ? selected.join("や")+"にお悩みなら…最適なケアをご提案します" : "";
+selected.length ? selected.join("や、")+"に、お悩みなら…最適なケアをご提案します" : "";
 
 /* フィルター */
 let result=courses.filter(m=>{
