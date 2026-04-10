@@ -227,9 +227,9 @@ const symptomTags=["コリ","冷え","ストレス","不眠","だるさ","肌","
 let selected=tags.filter(t=>symptomTags.includes(t));
 
 if(selected.length>0){
-let txt=selected.join("や、");
+let txt=selected.join("や");
 document.getElementById("message").innerHTML=
-`${txt}に、お悩みなら…<br>最適なコースや候補をご提案します`;
+`${txt}にお悩みなら…<br>最適なコースや候補をご提案します`;
 }else{
 document.getElementById("message").innerHTML="";
 }
