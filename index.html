@@ -198,14 +198,14 @@ matched = options[sex];
 }
 
 optHTML = `
-<div class="section-title">おすすめオプション</div>
+<div class="section-title">おすすめオプション「追加してカスタムしませんか」</div>
 ` + matched.map(o=>`<div class="card">${o.name}</div>`).join("");
 }
 
 /* サブコース（2位・3位） */
 let subCourses = result.slice(1,3);
 let subHTML = subCourses.length ? `
-<div class="section-title">他のおすすめ</div>
+<div class="section-title">他のおすすめと組み合わせのご提案</div>
 <div class="sub-list">
 ${subCourses.map(c=>`
 <div class="sub-item">${c.name}　${c.price}</div>
@@ -216,7 +216,7 @@ ${subCourses.map(c=>`
 document.getElementById("top").innerHTML=`
 <div class="top-card">
 <b>あなたに最もおすすめ</b><br>${top.name}<br>${top.price}
-<div class="reason">お悩みに合わせてバランス良く整えます。</div>
+<div class="reason">ご来店時に体調や強さのご希望も確認します</div>
 <button>このコースを詳しく</button>
 </div>
 ${optHTML}
