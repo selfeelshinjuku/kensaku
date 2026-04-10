@@ -2,225 +2,251 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>セルフ診断</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SelFeel お悩み診断</title>
+
 <style>
-body { font-family: sans-serif; padding: 20px; background:#f7f7f7;}
-.container { max-width:600px; margin:auto; background:#fff; padding:20px; border-radius:10px;}
-h2 { margin-top:0;}
-button {
-  display:block; width:100%; margin:10px 0; padding:12px;
-  border:none; border-radius:8px; background:#333; color:#fff; font-size:16px;
-}
-button:hover { background:#555;}
-.result { background:#f0f0f0; padding:15px; border-radius:8px; margin-top:20px;}
+body {font-family:-apple-system,sans-serif;margin:0;padding:15px;background:#fdfaf5;}
+h2 {margin:20px 0 10px;border-left:4px solid #c5a36b;padding-left:10px;}
+.tag-box {display:flex;flex-wrap:wrap;gap:8px;}
+label {border:1px solid #c5a36b;padding:8px 14px;border-radius:20px;cursor:pointer;font-size:13px;}
+input {display:none;}
+input:checked + span {background:#1e4d58;color:#fff;border-radius:20px;padding:8px 14px;}
+
+#message {margin:30px 0;font-weight:bold;line-height:1.7;}
+
+.top-card {border:2px solid #c5a36b;padding:20px;border-radius:12px;background:#fff;margin-bottom:20px;}
+.reason {margin-top:10px;font-size:13px;color:#555;}
+
+.card {background:#fff;padding:15px;border-radius:10px;margin:10px 0;box-shadow:0 4px 10px rgba(0,0,0,0.05);}
+.section-title {margin-top:20px;color:#c5a36b;}
+
+.sub-list {margin-top:10px;}
+.sub-item {padding:10px 5px;border-bottom:1px solid #eee;font-size:13px;color:#444;}
+
+button {margin-top:10px;width:100%;padding:10px;background:#1e4d58;color:#fff;border:none;border-radius:6px;}
+.reset-btn {background:#aaa;margin-top:20px;}
 </style>
 </head>
 
 <body>
-<div class="container">
 
-<h2 id="title">あなたに最適なコース診断</h2>
-
-<div id="content"></div>
-
+<h2>性別</h2>
+<div class="tag-box">
+<label><input type="radio" name="sex" value="male"><span>男性</span></label>
+<label><input type="radio" name="sex" value="female"><span>女性</span></label>
 </div>
+
+<h2>年代</h2>
+<div class="tag-box">
+<label><input type="radio" name="age" value="10"><span>〜19</span></label>
+<label><input type="radio" name="age" value="20"><span>20代</span></label>
+<label><input type="radio" name="age" value="30"><span>30代</span></label>
+<label><input type="radio" name="age" value="40"><span>40代</span></label>
+<label><input type="radio" name="age" value="50"><span>50代</span></label>
+<label><input type="radio" name="age" value="60"><span>60〜</span></label>
+</div>
+
+<h2>お悩み</h2>
+<div id="concern-male" class="tag-box" style="display:none;"></div>
+<div id="concern-female" class="tag-box" style="display:none;"></div>
+
+<h2>施術部位</h2>
+<div id="parts" class="tag-box"></div>
+
+<h2>おすすめオプションも見る</h2>
+<div class="tag-box">
+<label><input type="radio" name="option" value="yes"><span>はい</span></label>
+<label><input type="radio" name="option" value="no" checked><span>いいえ</span></label>
+</div>
+
+<div id="message"></div>
+<div id="top"></div>
+<div id="other"></div>
+
+<button class="reset-btn" onclick="resetAll()">入力内容をリセットする</button>
 
 <script>
 
-let gender = "";
-let concerns = [];
-let purpose = "";
+/* ===== データ ===== */
 
-// 初期画面
-function start(){
-  document.getElementById("content").innerHTML = `
-    <p>性別を選択してください</p>
-    <button onclick="setGender('male')">男性</button>
-    <button onclick="setGender('female')">女性</button>
-  `;
+const concernMale = ["コリ","冷え","ストレス","不眠","だるさ","眼精疲労","活力"];
+const concernFemale = ["コリ","冷え","ストレス","不眠","だるさ","肌","癒し"];
+
+const courses = [
+{sex:"male",name:"メンズアロマ",price:"12,000円〜",tags:["コリ","冷え","ストレス","不眠","全身"]},
+{sex:"male",name:"メンズリカバリー",price:"17,000円〜",tags:["コリ","だるさ","全身"]},
+{sex:"male",name:"アート＆メンズアロマ",price:"26,000円",tags:["ストレス","全身"]},
+{sex:"male",name:"アート＆ヘッド",price:"23,500円",tags:["不眠","ヘッド"]},
+{sex:"male",name:"メンズブースト",price:"ASK",tags:["活力","そけい"],maxAge:49},
+
+{sex:"female",name:"リラックスセット",price:"9,500円〜",tags:["コリ","冷え","足裏","全身"]},
+{sex:"female",name:"アート＆リフレ",price:"23,500円",tags:["ストレス","足裏","全身"]},
+{sex:"female",name:"レイキヒーリング",price:"要確認",tags:["癒し","全身"]},
+{sex:"female",name:"アート＆ヘッド",price:"23,500円",tags:["不眠","ヘッド"]},
+{sex:"female",name:"シンデレラリラックス",price:"22,000円",tags:["美容","全身"]},
+{sex:"female",name:"シンデレラフェイシャル",price:"12,500円",tags:["肌","フェイス"]},
+{sex:"female",name:"MDNAシンデレラ",price:"43,000円",tags:["美容","全身"]}
+];
+
+const options = {
+male:[
+{name:"炭酸ヘッド",tags:["不眠","ヘッド"]},
+{name:"メンズエナジー",tags:["活力","そけい"]},
+{name:"プチフェイシャル",tags:["肌","フェイス"]}
+],
+female:[
+{name:"炭酸ヘッド",tags:["不眠","ヘッド"]},
+{name:"ホットリフレ",tags:["冷え","足裏"]},
+{name:"超音波レッグ",tags:["冷え","下半身"]},
+{name:"レイキヒーリング",tags:["癒し"]}
+]
+};
+
+/* ===== UI ===== */
+
+function renderConcerns(sex){
+let list = sex==="male" ? concernMale : concernFemale;
+let target = document.getElementById(sex==="male"?"concern-male":"concern-female");
+
+target.innerHTML = list.map(v=>`
+<label><input type="checkbox" class="tag" value="${v}"><span>${v}</span></label>
+`).join("");
+
+target.style.display="flex";
 }
 
-function setGender(g){
-  gender = g;
-  showConcerns();
+function renderParts(sex){
+let base=["全身","ヘッド","フェイス","足裏","上半身","下半身"];
+if(sex==="male") base.push("そけい");
+
+document.getElementById("parts").innerHTML =
+base.map(v=>`<label><input type="checkbox" class="tag" value="${v}"><span>${v}</span></label>`).join("");
 }
 
-// 悩み選択
-function showConcerns(){
+/* ===== イベント ===== */
 
-  let list = gender === "male" ? [
-    "コリ・ハリ","冷え・むくみ","ストレス","不眠","頭痛・眼精疲労","だるさ","肌荒れ","精力・活力"
-  ] : [
-    "コリ・ハリ","冷え・むくみ","ストレス","不眠","頭痛・眼精疲労","だるさ","肌荒れ","美容"
-  ];
+document.querySelectorAll('input[name="sex"]').forEach(el=>{
+el.addEventListener('change',()=>{
+document.getElementById("concern-male").style.display="none";
+document.getElementById("concern-female").style.display="none";
+renderConcerns(el.value);
+renderParts(el.value);
+filter();
+});
+});
 
-  let html = "<p>気になる悩みを選択（複数OK）</p>";
+document.addEventListener('change',filter);
 
-  list.forEach(item=>{
-    html += `<button onclick="toggleConcern('${item}')">${item}</button>`;
-  });
+/* ===== メイン ===== */
 
-  html += `<button onclick="showPurpose()">次へ</button>`;
+function filter(){
 
-  document.getElementById("content").innerHTML = html;
+let sex=document.querySelector('input[name="sex"]:checked')?.value;
+let age=parseInt(document.querySelector('input[name="age"]:checked')?.value||0);
+let rawTags=[...document.querySelectorAll('.tag:checked')].map(e=>e.value);
+
+/* 重複排除 */
+let tags=[...new Set(rawTags)];
+
+let concernList = sex==="male"?concernMale:concernFemale;
+let concernTags = tags.filter(t=>concernList.includes(t));
+
+/* メッセージ */
+let msg="";
+if(concernTags.length){
+msg = concernTags.length===1
+? `${concernTags[0]}にお悩みなら…`
+: `${concernTags[0]}や${concernTags.slice(1).join("、")}などにお悩みなら…`;
+
+msg += "<br>あなたに合うケアをご提案します";
+}
+document.getElementById("message").innerHTML=msg;
+
+/* コース */
+let result=courses.filter(c=>{
+if(sex && c.sex!==sex) return false;
+if(c.maxAge && age>=50) return false;
+return true;
+});
+
+result=result.map(c=>{
+let score=0;
+tags.forEach(t=>{if(c.tags.includes(t))score+=2});
+return {...c,score};
+}).sort((a,b)=>b.score-a.score);
+
+if(!result.length){
+document.getElementById("top").innerHTML="";
+document.getElementById("other").innerHTML="";
+return;
 }
 
-function toggleConcern(c){
-  if(concerns.includes(c)){
-    concerns = concerns.filter(x=>x!==c);
-  } else {
-    concerns.push(c);
-  }
+/* TOP */
+let top=result[0];
+
+/* オプション */
+let optHTML="";
+if(document.querySelector('input[name="option"]:checked')?.value==="yes" && sex){
+
+let matched = options[sex].filter(o =>
+tags.some(t => o.tags.includes(t))
+);
+
+if(matched.length===0){
+matched = options[sex];
 }
 
-// 目的
-function showPurpose(){
-  let list = gender === "male" ? [
-    "疲れを取りたい","リラックスしたい","体を整えたい","美容も気になる","活力を上げたい"
-  ] : [
-    "疲れを取りたい","リラックスしたい","体を整えたい","キレイになりたい"
-  ];
-
-  let html = "<p>目的を選択してください</p>";
-
-  list.forEach(item=>{
-    html += `<button onclick="setPurpose('${item}')">${item}</button>`;
-  });
-
-  document.getElementById("content").innerHTML = html;
+optHTML = `
+<div class="section-title">おすすめオプション</div>
+` + matched.map(o=>`<div class="card">${o.name}</div>`).join("");
 }
 
-function setPurpose(p){
-  purpose = p;
-  showResult();
+/* サブコース（2位・3位） */
+let subCourses = result.slice(1,3);
+let subHTML = subCourses.length ? `
+<div class="section-title">他のおすすめ</div>
+<div class="sub-list">
+${subCourses.map(c=>`
+<div class="sub-item">${c.name}　${c.price}</div>
+`).join("")}
+</div>
+` : "";
+
+document.getElementById("top").innerHTML=`
+<div class="top-card">
+<b>あなたに最もおすすめ</b><br>${top.name}<br>${top.price}
+<div class="reason">お悩みに合わせてバランス良く整えます。</div>
+<button>このコースを詳しく</button>
+</div>
+${optHTML}
+`;
+
+document.getElementById("other").innerHTML = subHTML;
+
 }
 
-// 診断ロジック
-function showResult(){
+/* ===== リセット ===== */
 
-  let course = "";
-  let reason = "";
-  let options = [];
+function resetAll(){
 
-  // 男性ロジック
-  if(gender === "male"){
-
-    if(concerns.includes("精力・活力")){
-      course = "メンズブースト";
-      reason = "活力・精力アップに特化した下半身集中ケア";
-      options.push("メンズエナジー");
-    }
-
-    if(concerns.includes("コリ・ハリ") && concerns.includes("ストレス") && concerns.includes("不眠")){
-      course = "メンズリカバリー";
-      reason = "深部のコリ＋ストレス＋不眠に対応する最上位ケア";
-    }
-
-    if(course === "" && (concerns.includes("コリ・ハリ") || concerns.includes("冷え・むくみ"))){
-      course = "メンズアロマ";
-      reason = "整体＋オイルで血流とコリを改善";
-    }
-
-    if(concerns.length >=5){
-      course = "メンズマックス";
-      reason = "全身フルケアの最上位コース";
-    }
-
-    if(course === ""){
-      course = "リラックスセット";
-      reason = "全身をバランスよく整えるベーシックケア";
-    }
-
-    // オプション
-    if(concerns.includes("ストレス") || concerns.includes("不眠")){
-      options.push("炭酸ヘッドセラピー");
-    }
-
-    if(concerns.includes("頭痛・眼精疲労")){
-      options.push("スペシャルヘッドセラピー");
-    }
-
-    if(concerns.includes("肌荒れ")){
-      options.push("背中スクラブ");
-    }
-
-    if(concerns.includes("冷え・むくみ")){
-      options.push("SIXPAD");
-    }
-
-  }
-
-  // 女性ロジック
-  if(gender === "female"){
-
-    if(concerns.includes("美容")){
-      course = "シンデレラフェイシャル";
-      reason = "美容成分導入とリフトアップケア";
-    }
-
-    if(concerns.includes("コリ・ハリ") && concerns.includes("ストレス")){
-      course = "シンデレラリラックス";
-      reason = "疲労とストレスを同時に解消する人気コース";
-    }
-
-    if(course === "" && concerns.includes("冷え・むくみ")){
-      course = "リフレクソロジー";
-      reason = "むくみ・冷え改善の足元集中ケア";
-    }
-
-    if(concerns.length >=5){
-      course = "MDNAシンデレラ";
-      reason = "全身＋美容の最上位ケア";
-    }
-
-    if(course === ""){
-      course = "リラックスセット";
-      reason = "全身を整える定番コース";
-    }
-
-    // オプション
-    if(concerns.includes("冷え・むくみ")){
-      options.push("ホットリフレクソロジー");
-    }
-
-    if(concerns.includes("ストレス") || concerns.includes("不眠")){
-      options.push("炭酸ヘッドセラピー");
-    }
-
-    if(concerns.includes("頭痛・眼精疲労")){
-      options.push("スペシャルヘッドセラピー");
-    }
-
-    if(concerns.includes("美容")){
-      options.push("SIXPAD");
-    }
-
-  }
-
-  // オプション制限
-  options = [...new Set(options)].slice(0,3);
-
-  let html = `
-    <div class="result">
-    <h3>あなたにおすすめ</h3>
-
-    <p><strong>コース：</strong><br>${course}</p>
-
-    <p><strong>理由：</strong><br>${reason}</p>
-
-    <p><strong>おすすめオプション：</strong><br>
-    ${options.join("<br>")}
-    </p>
-
-    </div>
-  `;
-
-  document.getElementById("content").innerHTML = html;
+document.querySelectorAll('input').forEach(el=>{
+if(el.type==="radio" || el.type==="checkbox"){
+el.checked=false;
 }
+});
 
-// 起動
-start();
+document.getElementById("concern-male").innerHTML="";
+document.getElementById("concern-female").innerHTML="";
+document.getElementById("parts").innerHTML="";
+document.getElementById("message").innerHTML="";
+document.getElementById("top").innerHTML="";
+document.getElementById("other").innerHTML="";
+
+document.getElementById("concern-male").style.display="none";
+document.getElementById("concern-female").style.display="none";
+
+}
 
 </script>
 
