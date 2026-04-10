@@ -211,7 +211,7 @@ if(matched.length===0) matched = options[sex];
 matched = matched.slice(0,3);
 
 optHTML = `
-<div class="section-title">●オプションを追加してカスタムするなら…</div>
+<div class="section-title">● オプションを追加して、カスタムしませんか…</div>
 ` + matched.map(o=>`<div class="card">${o.name}</div>`).join("");
 }
 
@@ -219,7 +219,7 @@ let subCourses = result.slice(1,3);
 
 document.getElementById("top").innerHTML=`
 <div class="top-card">
-<b>あなたに最もおすすめ</b><br>${top.name}<br>${top.price}
+<b>今のあなたに最もおすすめのコース</b><br>${top.name}<br>${top.price}
 <div class="reason">施術前に体調やご希望をお伺いします。</div>
 <button>このコースを詳しく</button>
 </div>
@@ -227,7 +227,7 @@ ${optHTML}
 `;
 
 document.getElementById("other").innerHTML = subCourses.length ? `
-<div class="section-title">●他のおすすめと組み合わせに…</div>
+<div class="section-title">● 他のおすすめコースと、組み合わせにいかがでしょうか…</div>
 <div class="sub-list">
 ${subCourses.map(c=>`<div class="sub-item">${c.name}　${c.price}</div>`).join("")}
 </div>` : "";
