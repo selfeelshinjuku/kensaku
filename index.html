@@ -79,6 +79,16 @@ button {
 <label><input type="radio" name="sex" value="female"><span>女性</span></label>
 </div>
 
+<h2>年代</h2>
+<div class="tag-box">
+<label><input type="radio" name="age" value="10"><span>〜19</span></label>
+<label><input type="radio" name="age" value="20"><span>20〜29</span></label>
+<label><input type="radio" name="age" value="30"><span>30〜39</span></label>
+<label><input type="radio" name="age" value="40"><span>40〜49</span></label>
+<label><input type="radio" name="age" value="50"><span>50〜59</span></label>
+<label><input type="radio" name="age" value="60"><span>60〜</span></label>
+</div>
+
 <h2>お悩み</h2>
 <div class="tag-box">
 <label><input type="checkbox" class="tag" value="コリ"><span>コリ・ハリ</span></label>
@@ -90,6 +100,17 @@ button {
 <label><input type="checkbox" class="tag" value="眼精疲労"><span>眼精疲労</span></label>
 </div>
 
+<h2>施術部位</h2>
+<div class="tag-box">
+<label><input type="checkbox" class="tag" value="全身"><span>全身</span></label>
+<label><input type="checkbox" class="tag" value="ヘッド"><span>ヘッド</span></label>
+<label><input type="checkbox" class="tag" value="フェイス"><span>フェイス</span></label>
+<label><input type="checkbox" class="tag" value="足裏"><span>足裏</span></label>
+<label><input type="checkbox" class="tag" value="上半身"><span>上半身</span></label>
+<label><input type="checkbox" class="tag" value="下半身"><span>下半身</span></label>
+<label><input type="checkbox" class="tag" value="そけい"><span>そけい部</span></label>
+</div>
+
 <h2>なりたい状態</h2>
 
 <div id="male" class="tag-box" style="display:none;">
@@ -97,6 +118,8 @@ button {
 <label><input type="checkbox" class="tag" value="疲労回復"><span>疲れを抜きたい</span></label>
 <label><input type="checkbox" class="tag" value="思考クリア"><span>頭をクリアに</span></label>
 <label><input type="checkbox" class="tag" value="活力"><span>活力UP</span></label>
+<label><input type="checkbox" class="tag" value="集中"><span>集中力UP</span></label>
+<label><input type="checkbox" class="tag" value="リセット"><span>完全リセット</span></label>
 </div>
 
 <div id="female" class="tag-box" style="display:none;">
@@ -104,6 +127,14 @@ button {
 <label><input type="checkbox" class="tag" value="デトックス"><span>体を軽く</span></label>
 <label><input type="checkbox" class="tag" value="美容"><span>綺麗になりたい</span></label>
 <label><input type="checkbox" class="tag" value="休息"><span>贅沢に休む</span></label>
+<label><input type="checkbox" class="tag" value="巡り"><span>巡り改善</span></label>
+<label><input type="checkbox" class="tag" value="整う"><span>心身を整える</span></label>
+</div>
+
+<h2>おすすめオプションも見る</h2>
+<div class="tag-box">
+<label><input type="radio" name="option" value="yes"><span>はい</span></label>
+<label><input type="radio" name="option" value="no" checked><span>いいえ</span></label>
 </div>
 
 <div id="result"></div>
@@ -112,38 +143,56 @@ button {
 
 const data = [
 
-{sex:"male",name:"メンズアロマ",price:"12,000円〜",tags:["コリ","冷え","ストレス","不眠","だるさ","肌","疲労回復"]},
-{sex:"male",name:"メンズリカバリー",price:"17,000円〜",tags:["コリ","ストレス","不眠","眼精疲労","疲労回復","思考クリア"]},
-{sex:"male",name:"メンズブースト",price:"12,000円〜",tags:["活力","ストレス","不眠"]},
-{sex:"male",name:"メンズマックス",price:"28,000円〜",tags:["コリ","ストレス","不眠","活力"]},
+{sex:"male",name:"メンズアロマ",price:"12,000円〜",tags:["コリ","冷え","ストレス","不眠","全身","疲労回復"]},
 
-{sex:"female",name:"リラックスセット",price:"9,500円〜",tags:["コリ","冷え","だるさ","デトックス"]},
-{sex:"female",name:"シンデレラリラックス",price:"22,000円",tags:["コリ","冷え","ストレス","美容"]},
-{sex:"female",name:"MDNAシンデレラ",price:"43,000円",tags:["美容","デトックス"]},
+{sex:"male",name:"メンズリカバリー",price:"17,000円〜",tags:["コリ","ストレス","不眠","ヘッド","思考クリア"]},
 
-{sex:"female",name:"シンデレラフェイシャル",price:"12,500円",tags:["肌","美容"]},
+{sex:"male",name:"メンズブースト",price:"ASK",tags:["活力","そけい"],maxAge:49},
+
+{sex:"female",name:"リラックスセット",price:"9,500円〜",tags:["コリ","冷え","足裏","デトックス"]},
+
+{sex:"female",name:"シンデレラリラックス",price:"22,000円",tags:["コリ","冷え","美容","全身"]},
 
 ];
 
-document.querySelectorAll('input[name="sex"]').forEach(el=>{
+const options = [
+
+{sex:"male",name:"メンズエナジー",price:"+1,500円",tags:["活力","そけい"]},
+
+{sex:"male",name:"炭酸ヘッド",price:"+1,500円",tags:["不眠","ヘッド"]},
+
+{sex:"female",name:"ホットリフレ",price:"+1,500円",tags:["冷え","足裏"]},
+
+{sex:"female",name:"超音波レッグ",price:"+3,000円",tags:["冷え","だるさ","下半身"]}
+
+];
+
+document.querySelectorAll('input').forEach(el=>{
 el.addEventListener('change',()=>{
-let sex=document.querySelector('input[name="sex"]:checked').value;
-document.getElementById("male").style.display=sex==="male"?"flex":"none";
-document.getElementById("female").style.display=sex==="female"?"flex":"none";
+toggleUI();
 filter();
 });
 });
 
-document.querySelectorAll('.tag').forEach(el=>{
-el.addEventListener('change',filter);
-});
+function toggleUI(){
+let sex=document.querySelector('input[name="sex"]:checked')?.value;
+document.getElementById("male").style.display=sex==="male"?"flex":"none";
+document.getElementById("female").style.display=sex==="female"?"flex":"none";
+}
 
 function filter(){
 
 let sex=document.querySelector('input[name="sex"]:checked')?.value;
+let age=parseInt(document.querySelector('input[name="age"]:checked')?.value||0);
+let showOption=document.querySelector('input[name="option"]:checked')?.value==="yes";
+
 let tags=[...document.querySelectorAll('.tag:checked')].map(e=>e.value);
 
-let result=data.filter(m=>!sex||m.sex===sex);
+let result=data.filter(m=>{
+if(sex && m.sex!==sex) return false;
+if(m.maxAge && age>=50) return false;
+return true;
+});
 
 result=result.map(m=>{
 let score=0;
@@ -151,14 +200,25 @@ tags.forEach(t=>{if(m.tags.includes(t))score+=2});
 return {...m,score};
 }).sort((a,b)=>b.score-a.score);
 
-document.getElementById("result").innerHTML=result.map(m=>`
+let html=result.map(m=>`
 <div class="card">
-<div class="recommend">${m.score>=4?"おすすめ":" "}</div>
-<b>${m.name}</b><br>
-${m.price}
-<button>このコースを予約</button>
+<div class="recommend">${m.score>=4?"おすすめ":""}</div>
+<b>${m.name}</b><br>${m.price}
+<button>このコースを詳しく</button>
 </div>
 `).join("");
+
+if(showOption){
+let opt=options.filter(o=>!sex||o.sex===sex);
+html+=`<h2>おすすめオプション</h2>`;
+html+=opt.map(o=>`
+<div class="card">
+<b>${o.name}</b><br>${o.price}
+</div>
+`).join("");
+}
+
+document.getElementById("result").innerHTML=html;
 
 }
 
