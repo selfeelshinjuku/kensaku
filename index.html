@@ -5,89 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SelFeel新宿 | お悩み別メニュー検索</title>
     <style>
-        /* 【style.cssの内容】 */
-        body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif; margin: 0; padding: 10px; color: #333; }
-        #search-section { background: #fdfaf5; padding: 25px; border-radius: 12px; margin-bottom: 30px; }
-        h3 { color: #1e4d58; font-size: 1.2rem; margin-top: 0; border-bottom: 2px solid #c5a36b; display: inline-block; padding-bottom: 5px; }
-        #tag-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
-        #tag-filters label { cursor: pointer; padding: 8px 15px; border: 1px solid #c5a36b; border-radius: 20px; background: #fff; font-size: 13px; transition: all 0.3s; }
-        #tag-filters input { display: none; }
-        #tag-filters label:has(input:checked) { background: #1e4d58; color: #fff; border-color: #1e4d58; }
+        body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif; margin: 0; padding: 10px; color: #333; background-color: #fdfaf5; }
+        #search-section { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        h3 { color: #1e4d58; font-size: 1rem; margin: 15px 0 10px; border-left: 4px solid #c5a36b; padding-left: 10px; }
+        .filter-group { margin-bottom: 20px; }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .age-input-box { margin: 10px 0; }
+        input[type="number"] { padding: 8px; border: 1px solid #c5a36b; border-radius: 5px; width: 60px; }
+        label { cursor: pointer; padding: 8px 15px; border: 1px solid #c5a36b; border-radius: 20px; background: #fff; font-size: 13px; transition: 0.3s; display: inline-block; }
+        input[type="checkbox"], input[type="radio"] { display: none; }
+        label:has(input:checked) { background: #1e4d58; color: #fff; border-color: #1e4d58; }
         .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
         .menu-card { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .badge { background: #c5a36b; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 3px; display: inline-block; margin-bottom: 8px; }
         .menu-name { font-weight: bold; margin: 5px 0; font-size: 1.1rem; }
         .price { color: #1e4d58; font-weight: bold; margin-bottom: 10px; }
         .tags { font-size: 11px; color: #999; }
-        #results-count { margin-bottom: 15px; font-size: 14px; color: #666; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div id="search-section">
-    <h3>お悩みから選ぶ（複数選択可）</h3>
-    <div id="tag-filters">
-        <label><input type="checkbox" class="tag-chk" value="コリ/ハリ"> コリ/ハリ</label>
-        <label><input type="checkbox" class="tag-chk" value="不眠"> 不眠</label>
-        <label><input type="checkbox" class="tag-chk" value="ストレス"> ストレス</label>
-        <label><input type="checkbox" class="tag-chk" value="冷/むくみ"> 冷/むくみ</label>
-        <label><input type="checkbox" class="tag-chk" value="眼精疲労"> 眼精疲労</label>
-        <label><input type="checkbox" class="tag-chk" value="全身"> 全身</label>
-        <label><input type="checkbox" class="tag-chk" value="ヘッド"> ヘッド</label>
+    <div class="filter-group">
+        <h3>1. 性別を選択</h3>
+        <div class="tag-container">
+            <label><input type="radio" name="sex" value="male" onchange="toggleBenefitTags(); filterAndDisplay()"> 男性</label>
+            <label><input type="radio" name="sex" value="female" onchange="toggleBenefitTags(); filterAndDisplay()"> 女性</label>
+        </div>
     </div>
 
-    <div id="results-count">該当メニュー：<span id="count">0</span>件</div>
+    <div class="filter-group">
+        <h3>2. 年齢を入力</h3>
+        <div class="age-input-box">
+            <input type="number" id="user-age" value="35" min="18" max="100" oninput="filterAndDisplay()"> 歳
+        </div>
+    </div>
+
+    <div class="filter-group">
+        <h3>3. 気になるお悩み・部位</h3>
+        <div class="tag-container">
+            <label><input type="checkbox" class="tag-chk" value="コリ/ハリ" onchange="filterAndDisplay()"> コリ/ハリ</label>
+            <label><input type="checkbox" class="tag-chk" value="冷/むくみ" onchange="filterAndDisplay()"> 冷/むくみ</label>
+            <label><input type="checkbox" class="tag-chk" value="不眠" onchange="filterAndDisplay()"> 不眠/ストレス</label>
+            <label><input type="checkbox" class="tag-chk" value="ヘッド" onchange="filterAndDisplay()"> ヘッド</label>
+            <label><input type="checkbox" class="tag-chk" value="フェイス" onchange="filterAndDisplay()"> フェイス</label>
+        </div>
+    </div>
+
+    <div class="filter-group">
+        <h3>4. こうなりたい！（ベネフィット）</h3>
+        <div id="benefit-male" class="tag-container hidden">
+            <label><input type="checkbox" class="tag-chk" value="活力向上" onchange="filterAndDisplay()"> 精力と活力アップで元気になりたい！</label>
+            <label><input type="checkbox" class="tag-chk" value="思考スッキリ" onchange="filterAndDisplay()"> 仕事のパフォーマンスを上げたい</label>
+        </div>
+        <div id="benefit-female" class="tag-container hidden">
+            <label><input type="checkbox" class="tag-chk" value="スピ癒し" onchange="filterAndDisplay()"> スピリチュアルな癒しも欲しい</label>
+            <label><input type="checkbox" class="tag-chk" value="デトックス" onchange="filterAndDisplay()"> 体を芯から軽く、綺麗にしたい</label>
+        </div>
+    </div>
+
+    <div style="margin-bottom:10px; font-size:14px;">該当メニュー：<span id="count">0</span>件</div>
     <div id="menu-list" class="results-grid"></div>
 </div>
 
 <script>
-    // 【script.jsの内容：メニューデータ】
-    // ここを編集してメニューを増やしてください
     const menuData = [
-        // --- 男性用コース（ボディ・コンディショニング等） ---
-        { sex: "male", name: "メンズアロマ 1時間30分", price: "12,000円", tags: ["コリ/ハリ", "冷/むくみ", "ストレス", "不眠", "だるさ", "肌荒", "全身", "オイル", "整体"], feat: "人気No1" },
-        { sex: "male", name: "メンズアロマ 2時間", price: "14,500円", tags: ["コリ/ハリ", "冷/むくみ", "ストレス", "不眠", "だるさ", "肌荒", "全身", "オイル", "整体"], feat: "人気No1" },
-        { sex: "male", name: "メンズアロマ 2時間30分", price: "17,000円", tags: ["コリ/ハリ", "冷/むくみ", "ストレス", "不眠", "だるさ", "肌荒", "全身", "オイル", "整体"], feat: "人気No1" },
-        { sex: "male", name: "メンズアロマ 3時間", price: "20,000円", tags: ["コリ/ハリ", "冷/むくみ", "ストレス", "不眠", "だるさ", "肌荒", "全身", "オイル", "整体"], feat: "人気No1" },
-        { sex: "male", name: "メンズリカバリー 1時間30分", price: "12,000円", tags: ["コリ/ハリ", "冷/むくみ", "だるさ", "腰痛", "全身", "整体"], feat: "NEW おすすめ" },
-        { sex: "male", name: "メンズリカバリー 2時間", price: "14,500円", tags: ["コリ/ハリ", "冷/むくみ", "だるさ", "腰痛", "全身", "整体"], feat: "NEW おすすめ" },
-        { sex: "male", name: "メンズリカバリー 2時間30分", price: "17,000円", tags: ["コリ/ハリ", "冷/むくみ", "だるさ", "腰痛", "全身", "整体"], feat: "NEW おすすめ" },
-        { sex: "male", name: "アート＆メンズアロマ 3時間", price: "26,000円", tags: ["コリ/ハリ", "冷/むくみ", "ストレス", "だるさ", "肌荒", "全身", "オイル", "メンタル"], feat: "NEW おすすめ" },
-        { sex: "male", name: "アート＆ヘッドセラピー", price: "23,500円", tags: ["ストレス", "不眠", "頭痛/眼疲", "ヘッド", "メンタル"], feat: "NEW" },
-
-        // --- 男性用オプション ---
-        { sex: "male", name: "SIXPAD op.15", price: "+3,500円", tags: ["コリ/ハリ", "冷/むくみ", "だるさ", "精力活力", "超音波"], feat: "NEW おすすめ" },
-        { sex: "male", name: "SIXPAD op.30", price: "+6,000円", tags: ["コリ/ハリ", "冷/むくみ", "だるさ", "精力活力", "超音波"], feat: "NEW" },
-        { sex: "male", name: "炭酸ヘッドセラピー", price: "+1,500円", tags: ["ストレス", "不眠", "頭痛/眼疲", "ヘッド"], feat: "リビNo1" },
-        { sex: "male", name: "スペシャルヘッドセラピー", price: "+3,500円", tags: ["ストレス", "不眠", "頭痛/眼疲", "ヘッド", "超音波"], feat: "おすすめ" },
-        { sex: "male", name: "プチフェイシャル", price: "+3,500円", tags: ["頭痛/眼疲", "肌荒", "フェイス"], feat: "おすすめ" },
-        { sex: "male", name: "メンズエナジー", price: "+1,500円", tags: ["ストレス", "精力活力", "そけい", "オイル"], feat: "人気No1" },
-        { sex: "male", name: "背中スクラブ", price: "+1,500円", tags: ["肌荒", "上半身"], feat: "おすすめ" },
-
-        // --- 女性用コース（リラックスセット等） ---
-        { sex: "female", name: "リラックスセット 1時間30分", price: "9,500円", tags: ["コリ/ハリ", "冷/むくみ", "だるさ", "全身", "足裏", "整体", "オイル", "リフレク"], feat: "リビNo1" },
-        { sex: "female", name: "リラックスセット 2時間", price: "11,000円", tags: ["コリ/ハリ", "冷/むくみ", "だるさ", "全身", "足裏", "整体", "オイル", "リフレク"], feat: "リビNo1" },
-        { sex: "female", name: "リラックスセット 2時間30分", price: "13,500円", tags: ["コリ/ハリ", "冷/むくみ", "だるさ", "全身", "足裏", "整体", "オイル", "リフレク"], feat: "リビNo1" },
-        { sex: "female", name: "アート＆リフレクソロジー 3時間", price: "23,500円", tags: ["コリ/ハリ", "冷/むくみ", "ストレス", "不眠", "だるさ", "全身", "足裏", "整体", "リフレク", "メンタル"], feat: "NEW" },
-        { sex: "female", name: "アート＆ヘッドセラピー", price: "23,500円", tags: ["ストレス", "不眠", "頭痛/眼疲", "ヘッド", "メンタル"], feat: "NEW" },
-
-        // --- 女性用オプション ---
-        { sex: "female", name: "SIXPAD op.15", price: "+3,500円", tags: ["コリ/ハリ", "冷/むくみ", "だるさ", "超音波"], feat: "NEW おすすめ" },
-        { sex: "female", name: "SIXPAD op.30", price: "+6,000円", tags: ["コリ/ハリ", "冷/むくみ", "だるさ", "超音波"], feat: "NEW" },
-        { sex: "female", name: "炭酸ヘッドセラピー", price: "+1,500円", tags: ["ストレス", "不眠", "頭痛/眼疲", "ヘッド"], feat: "リビNo1" },
-        { sex: "female", name: "スペシャルヘッドセラピー", price: "+3,500円", tags: ["ストレス", "不眠", "頭痛/眼疲", "ヘッド", "超音波"], feat: "おすすめ" },
-        { sex: "female", name: "ホットリフレクソロジー", price: "+1,500円", tags: ["冷/むくみ", "だるさ", "下半身", "足裏", "リフレク"], feat: "人気No1" },
-        { sex: "female", name: "超音波レッグケア", price: "+3,500円", tags: ["冷/むくみ", "だるさ", "下半身", "超音波"], feat: "おすすめ" }
+        // --- 男性用 ---
+        { sex: "male", name: "メンズアロマ 1.5h〜", price: "12,000円〜", tags: ["コリ/ハリ", "冷/むくみ", "不眠", "思考スッキリ"], feat: "人気No1", ageLimit: null },
+        { sex: "male", name: "メンズブースト", price: "ASK", tags: ["活力向上", "精力活力"], feat: "49歳以下限定", ageLimit: 49 },
+        { sex: "male", name: "メンズエナジー", price: "+1,500円", tags: ["活力向上", "精力活力", "そけい"], feat: "人気No1", ageLimit: null },
+        { sex: "male", name: "アート＆ヘッドセラピー", price: "23,500円", tags: ["不眠", "ヘッド", "思考スッキリ"], feat: "メンタルケア", ageLimit: null },
+        
+        // --- 女性用 ---
+        { sex: "female", name: "リラックスセット 1.5h〜", price: "9,500円〜", tags: ["コリ/ハリ", "冷/むくみ", "デトックス"], feat: "リピNo1", ageLimit: null },
+        { sex: "female", name: "アート＆リフレ 3h", price: "23,500円", tags: ["スピ癒し", "不眠", "デトックス"], feat: "極上の癒し", ageLimit: null },
+        { sex: "female", name: "レイキヒーリング", price: "要確認", tags: ["スピ癒し"], feat: "スピリチュアル", ageLimit: null },
+        { sex: "female", name: "超音波レッグケア", price: "+3,500円", tags: ["冷/むくみ", "デトックス"], feat: "おすすめ", ageLimit: null }
     ];
-    // 男女別表示設定（'all', 'male', 'female'）
-    // Jimdoの埋め込みURLの末尾に ?sex=male などと付けても判別できるようにできます
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentPageSex = urlParams.get('sex') || 'all'; 
+
+    // 性別に応じてベネフィットタグの表示を切り替える
+    const toggleBenefitTags = () => {
+        const selectedSex = document.querySelector('input[name="sex"]:checked')?.value;
+        document.getElementById('benefit-male').classList.toggle('hidden', selectedSex !== 'male');
+        document.getElementById('benefit-female').classList.toggle('hidden', selectedSex !== 'female');
+        
+        // 性別を変えたら、チェックされていたベネフィットをリセットする（誤作動防止）
+        document.querySelectorAll('.tag-chk').forEach(cb => {
+            if (cb.closest('.hidden')) cb.checked = false;
+        });
+    };
 
     const filterAndDisplay = () => {
+        const selectedSex = document.querySelector('input[name="sex"]:checked')?.value;
+        const userAge = parseInt(document.getElementById('user-age').value) || 0;
         const activeTags = Array.from(document.querySelectorAll('.tag-chk:checked')).map(cb => cb.value);
         
-        let filtered = menuData.filter(m => currentPageSex === 'all' || m.sex === currentPageSex);
+        let filtered = menuData;
+
+        if (selectedSex) {
+            filtered = filtered.filter(m => m.sex === selectedSex);
+        }
+
+        filtered = filtered.filter(m => {
+            if (m.ageLimit && userAge > m.ageLimit) return false;
+            return true;
+        });
+
         if (activeTags.length > 0) {
             filtered = filtered.filter(m => activeTags.some(t => m.tags.includes(t)));
         }
@@ -105,9 +129,10 @@
         document.getElementById('count').innerText = filtered.length;
     };
 
-    document.querySelectorAll('.tag-chk').forEach(el => el.addEventListener('change', filterAndDisplay));
-    window.onload = filterAndDisplay;
+    window.onload = () => {
+        toggleBenefitTags();
+        filterAndDisplay();
+    };
 </script>
-
 </body>
 </html>
