@@ -159,7 +159,7 @@ msg = concernTags.length===1
 ? `${concernTags[0]}にお悩みなら…`
 : `${concernTags[0]}や${concernTags.slice(1).join("、")}などにお悩みなら…`;
 
-msg += "<br>あなたに合うケアをご提案します";
+msg += "<br>今のあなたに合うコンディショニングケアをご提案します";
 }
 document.getElementById("message").innerHTML=msg;
 
@@ -198,14 +198,14 @@ matched = options[sex];
 }
 
 optHTML = `
-<div class="section-title">おすすめオプション「追加してカスタムしませんか」</div>
+<div class="section-title">おすすめオプションを追加して、カスタムしませんか</div>
 ` + matched.map(o=>`<div class="card">${o.name}</div>`).join("");
 }
 
 /* サブコース（2位・3位） */
 let subCourses = result.slice(1,3);
 let subHTML = subCourses.length ? `
-<div class="section-title">他のおすすめと組み合わせのご提案</div>
+<div class="section-title">他のおすすめコースと、組み合わせのご提案</div>
 <div class="sub-list">
 ${subCourses.map(c=>`
 <div class="sub-item">${c.name}　${c.price}</div>
@@ -215,8 +215,8 @@ ${subCourses.map(c=>`
 
 document.getElementById("top").innerHTML=`
 <div class="top-card">
-<b>あなたに最もおすすめ</b><br>${top.name}<br>${top.price}
-<div class="reason">ご来店時に体調や強さのご希望も確認します</div>
+<b>あなたに最もおすすめのコースです</b><br>${top.name}<br>${top.price}
+<div class="reason">ご来店時に、体調や強さのご希望も確認します</div>
 <button>このコースを詳しく</button>
 </div>
 ${optHTML}
