@@ -4,174 +4,195 @@
 <meta charset="UTF-8">
 <title>セルフ診断</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
 
+<style>
 body {
-  font-family: sans-serif;
-  background:#f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont;
+  background:#f7f7f7;
+  margin:0;
   padding:20px;
 }
 
 .container {
-  max-width:600px;
+  max-width:500px;
   margin:auto;
   background:#fff;
   padding:20px;
-  border-radius:12px;
+  border-radius:16px;
 }
 
 h2 {
   text-align:center;
+  margin-bottom:20px;
+}
+
+.step {
+  margin-bottom:20px;
 }
 
 .btn {
   display:block;
   width:100%;
-  margin:8px 0;
   padding:14px;
+  margin:8px 0;
   border-radius:10px;
-  border:1px solid #ccc;
+  border:1px solid #ddd;
   background:#fff;
-  font-size:16px;
+  font-size:15px;
   transition:0.2s;
 }
 
 .btn.active {
-  background:#333;
+  background:#222;
   color:#fff;
   border:none;
 }
 
-.next-btn {
-  margin-top:15px;
+.next {
   background:#000;
   color:#fff;
+  margin-top:10px;
 }
 
 .result {
-  background:#f0f0f0;
+  background:#f2f2f2;
   padding:20px;
-  border-radius:10px;
+  border-radius:12px;
 }
 
+.small {
+  color:#666;
+  font-size:14px;
+}
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
 <h2>あなたに最適なコース診断</h2>
-<div id="content"></div>
+
+<div id="app"></div>
 
 </div>
 
 <script>
 
-let gender = "";
-let concerns = [];
-let purpose = "";
+let gender="";
+let concerns=[];
+let purpose="";
+
+function render(html){
+  document.getElementById("app").innerHTML = html;
+}
 
 // STEP1
-function start(){
+function step1(){
   render(`
-    <p>性別を選択してください</p>
-    <button class="btn" onclick="selectGender('male', this)">男性</button>
-    <button class="btn" onclick="selectGender('female', this)">女性</button>
+    <div class="step">
+      <p>性別を選択してください</p>
+      <button class="btn" onclick="selectGender('male', this)">男性</button>
+      <button class="btn" onclick="selectGender('female', this)">女性</button>
+    </div>
   `);
 }
 
 function selectGender(g, el){
-  gender = g;
+  gender=g;
   setActive(el);
-  setTimeout(showConcerns, 300);
+  setTimeout(step2,200);
 }
 
 // STEP2
-function showConcerns(){
+function step2(){
 
-  let list = gender === "male"
+  let list = gender==="male"
     ? ["コリ・ハリ","冷え・むくみ","ストレス","不眠","頭痛・眼精疲労","だるさ","肌荒れ","精力・活力"]
     : ["コリ・ハリ","冷え・むくみ","ストレス","不眠","頭痛・眼精疲労","だるさ","肌荒れ","美容"];
 
-  let html = `<p>気になる悩みを選択（複数OK）</p>`;
+  let html = `<div class="step"><p>気になる悩みを選択（複数OK）</p>`;
 
   list.forEach(item=>{
-    html += `<button class="btn" onclick="toggleConcern('${item}', this)">${item}</button>`;
+    html += `<button class="btn" onclick="toggle('${item}', this)">${item}</button>`;
   });
 
-  html += `<button class="btn next-btn" onclick="showPurpose()">次へ</button>`;
+  html += `<button class="btn next" onclick="step3()">次へ</button></div>`;
 
   render(html);
 }
 
-function toggleConcern(c, el){
-  if(concerns.includes(c)){
-    concerns = concerns.filter(x=>x!==c);
+function toggle(val, el){
+  if(concerns.includes(val)){
+    concerns = concerns.filter(v=>v!==val);
     el.classList.remove("active");
   } else {
-    concerns.push(c);
+    concerns.push(val);
     el.classList.add("active");
   }
 }
 
 // STEP3
-function showPurpose(){
+function step3(){
 
-  let list = gender === "male"
+  let list = gender==="male"
     ? ["疲れを取りたい","リラックスしたい","体を整えたい","美容も気になる","活力を上げたい"]
     : ["疲れを取りたい","リラックスしたい","体を整えたい","キレイになりたい"];
 
-  let html = `<p>目的を選択してください</p>`;
+  let html = `<div class="step"><p>目的を選択してください</p>`;
 
   list.forEach(item=>{
     html += `<button class="btn" onclick="selectPurpose('${item}', this)">${item}</button>`;
   });
 
+  html += `</div>`;
+
   render(html);
 }
 
 function selectPurpose(p, el){
-  purpose = p;
+  purpose=p;
   setActive(el);
-  setTimeout(showResult, 300);
+  setTimeout(showResult,200);
 }
 
-// 診断ロジック（進化版）
+// 診断ロジック（完全版）
 function showResult(){
 
-  let course = "";
-  let reason = "";
-  let options = [];
+  let course="";
+  let reason="";
+  let options=[];
 
-  if(gender === "male"){
+  // 男性
+  if(gender==="male"){
 
     if(concerns.includes("精力・活力")){
-      course = "メンズブースト";
-      reason = "下半身の巡りと活力を高める特化ケアが最適です。";
+      course="メンズブースト";
+      reason="下半身の巡りと活力を高めるケアが最適です。";
       options.push("メンズエナジー");
     }
 
     if(concerns.includes("コリ・ハリ") && concerns.includes("ストレス") && concerns.includes("不眠")){
-      course = "メンズリカバリー";
-      reason = "コリ・ストレス・睡眠の質を同時に改善する深部ケアが必要です。";
+      course="メンズリカバリー";
+      reason="コリ・ストレス・睡眠を同時に改善する深部ケアが必要です。";
     }
 
-    if(course === "" && (concerns.includes("コリ・ハリ") || concerns.includes("冷え・むくみ"))){
-      course = "メンズアロマ";
-      reason = "血流促進とコリ解消をバランスよく整える施術が最適です。";
+    if(course==="" && (concerns.includes("コリ・ハリ") || concerns.includes("冷え・むくみ"))){
+      course="メンズアロマ";
+      reason="血流促進とコリ改善をバランスよく行います。";
     }
 
-    if(concerns.length >=5){
-      course = "メンズマックス";
-      reason = "全身の状態を一度に整える総合ケアがおすすめです。";
+    if(concerns.length>=5){
+      course="メンズマックス";
+      reason="複数の不調があるため全身トータルケアが必要です。";
     }
 
-    if(course === ""){
-      course = "リラックスセット";
-      reason = "全身のバランスを整えながら疲労を回復します。";
+    if(course===""){
+      course="リラックスセット";
+      reason="全身を整えながら疲労回復を行います。";
     }
 
-    if(concerns.includes("ストレス") || concerns.includes("不眠")){
+    if(concerns.includes("ストレス")||concerns.includes("不眠")){
       options.push("炭酸ヘッドセラピー");
     }
 
@@ -186,41 +207,41 @@ function showResult(){
     if(concerns.includes("冷え・むくみ")){
       options.push("SIXPAD");
     }
-
   }
 
-  if(gender === "female"){
+  // 女性
+  if(gender==="female"){
 
     if(concerns.includes("美容")){
-      course = "シンデレラフェイシャル";
-      reason = "美容成分導入と引き締めケアで肌状態を改善します。";
+      course="シンデレラフェイシャル";
+      reason="美容成分導入とリフトアップケアが最適です。";
     }
 
     if(concerns.includes("コリ・ハリ") && concerns.includes("ストレス")){
-      course = "シンデレラリラックス";
-      reason = "疲労とストレスを同時にケアできる最適なコースです。";
+      course="シンデレラリラックス";
+      reason="疲労とストレスを同時にケアできます。";
     }
 
-    if(course === "" && concerns.includes("冷え・むくみ")){
-      course = "リフレクソロジー";
-      reason = "むくみと冷えの改善に特化したケアです。";
+    if(course==="" && concerns.includes("冷え・むくみ")){
+      course="リフレクソロジー";
+      reason="むくみ・冷え改善に特化したケアです。";
     }
 
-    if(concerns.length >=5){
-      course = "MDNAシンデレラ";
-      reason = "全身と美容を同時に整えるトータルケアです。";
+    if(concerns.length>=5){
+      course="MDNAシンデレラ";
+      reason="全身＋美容を同時に整える総合ケアです。";
     }
 
-    if(course === ""){
-      course = "リラックスセット";
-      reason = "全身をバランスよく整えリラックスできます。";
+    if(course===""){
+      course="リラックスセット";
+      reason="全身を整えながらリラックスできます。";
     }
 
     if(concerns.includes("冷え・むくみ")){
       options.push("ホットリフレクソロジー");
     }
 
-    if(concerns.includes("ストレス") || concerns.includes("不眠")){
+    if(concerns.includes("ストレス")||concerns.includes("不眠")){
       options.push("炭酸ヘッドセラピー");
     }
 
@@ -231,10 +252,9 @@ function showResult(){
     if(concerns.includes("美容")){
       options.push("SIXPAD");
     }
-
   }
 
-  options = [...new Set(options)].slice(0,3);
+  options=[...new Set(options)].slice(0,3);
 
   render(`
     <div class="result">
@@ -242,7 +262,7 @@ function showResult(){
 
       <p><strong>${course}</strong></p>
 
-      <p>${reason}</p>
+      <p class="small">${reason}</p>
 
       <p><strong>おすすめオプション</strong><br>
       ${options.join("<br>")}
@@ -251,19 +271,15 @@ function showResult(){
   `);
 }
 
-// 共通
-function render(html){
-  document.getElementById("content").innerHTML = html;
-}
-
 function setActive(el){
   document.querySelectorAll(".btn").forEach(b=>b.classList.remove("active"));
   el.classList.add("active");
 }
 
 // 起動
-start();
+step1();
 
 </script>
+
 </body>
 </html>
