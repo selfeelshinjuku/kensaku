@@ -174,7 +174,7 @@ if(concernTags.length){
 msg = concernTags.length===1
 ? `${concernTags[0]}にお悩みなら…`
 : `${concernTags[0]}や${concernTags.slice(1).join("、")}などにお悩みなら…`;
-msg += "<br>今のあなたに合う コンディショニング・ケア をご提案します";
+msg += "<br>あなたに合うケアをご提案します";
 }
 document.getElementById("message").innerHTML=msg;
 
@@ -211,7 +211,7 @@ if(matched.length===0) matched = options[sex];
 matched = matched.slice(0,3);
 
 optHTML = `
-<div class="section-title">● オプションを追加して、カスタムしませんか…</div>
+<div class="section-title">おすすめオプション</div>
 ` + matched.map(o=>`<div class="card">${o.name}</div>`).join("");
 }
 
@@ -219,40 +219,34 @@ let subCourses = result.slice(1,3);
 
 document.getElementById("top").innerHTML=`
 <div class="top-card">
-<b>今のあなたに最もおすすめのコース</b><br>${top.name}<br>${top.price}
-<div class="reason">施術前に体調やご希望をお伺いします。</div>
+<b>あなたに最もおすすめ</b><br>${top.name}<br>${top.price}
+<div class="reason">お悩みに合わせて最適なケアをご提案します。</div>
 <button>このコースを詳しく</button>
 </div>
 ${optHTML}
 `;
 
 document.getElementById("other").innerHTML = subCourses.length ? `
-<div class="section-title">● 他のおすすめと、組み合わせの候補です</div>
+<div class="section-title">他のおすすめ</div>
 <div class="sub-list">
 ${subCourses.map(c=>`<div class="sub-item">${c.name}　${c.price}</div>`).join("")}
 </div>` : "";
 
 }
 
-/* ===== リセット（ここだけ変更） ===== */
+/* ===== リセット ===== */
 
-function resetPartial(){
-
-// お悩みだけリセット
-document.querySelectorAll('.concern-tag').forEach(el=>el.checked=false);
-
-// 部位だけリセット
-document.querySelectorAll('.part-tag').forEach(el=>el.checked=false);
-
-// メッセージと結果だけクリア
+function resetAll(){
+document.querySelectorAll('input').forEach(el=>el.checked=false);
+document.getElementById("concern-male").innerHTML="";
+document.getElementById("concern-female").innerHTML="";
+document.getElementById("parts").innerHTML="";
 document.getElementById("message").innerHTML="";
 document.getElementById("top").innerHTML="";
 document.getElementById("other").innerHTML="";
-
+document.getElementById("concern-male").style.display="none";
+document.getElementById("concern-female").style.display="none";
 }
-
-/* ===== 既存ロジックそのまま ===== */
-// filter関数などはそのまま
 
 </script>
 
