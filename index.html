@@ -234,19 +234,25 @@ ${subCourses.map(c=>`<div class="sub-item">${c.name}　${c.price}</div>`).join("
 
 }
 
-/* ===== リセット ===== */
+/* ===== リセット（ここだけ変更） ===== */
 
-function resetAll(){
-document.querySelectorAll('input').forEach(el=>el.checked=false);
-document.getElementById("concern-male").innerHTML="";
-document.getElementById("concern-female").innerHTML="";
-document.getElementById("parts").innerHTML="";
+function resetPartial(){
+
+// お悩みだけリセット
+document.querySelectorAll('.concern-tag').forEach(el=>el.checked=false);
+
+// 部位だけリセット
+document.querySelectorAll('.part-tag').forEach(el=>el.checked=false);
+
+// メッセージと結果だけクリア
 document.getElementById("message").innerHTML="";
 document.getElementById("top").innerHTML="";
 document.getElementById("other").innerHTML="";
-document.getElementById("concern-male").style.display="none";
-document.getElementById("concern-female").style.display="none";
+
 }
+
+/* ===== 既存ロジックそのまま ===== */
+// filter関数などはそのまま
 
 </script>
 
